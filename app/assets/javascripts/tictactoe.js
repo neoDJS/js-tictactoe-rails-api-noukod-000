@@ -8,7 +8,7 @@ $(document).ready(function(){
 });
 
 function player(){
-  const label = (turn % 2 == 0) ? 'O' : 'X';
+  const label = (turn % 2 == 0) ? 'X' : 'O';
   return label;
 }
 
