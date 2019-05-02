@@ -1,5 +1,5 @@
 // Code your JavaScript / jQuery solution here
-let turn = 0;
+turn = 0;
 let gameId;
 let state = ['', '', '', '', '', '', '', '', ''];
 
@@ -13,9 +13,9 @@ function player(){
 }
 
 function updateState(el){
-    var x = parseInt($(el).data("x"));
-    var y = parseInt($(el).data("y"));
-    state[x+(3*y)] = player();
+    // var x = parseInt($(el).data("x"));
+    // var y = parseInt($(el).data("y"));
+    $(el).text(player());
 }
 
 function setMessage(value){
@@ -23,6 +23,7 @@ function setMessage(value){
 }
 
 function checkWinner(){
+  const squares = $.makeArray($('td'));
   const WIN_COMBINATIONS = [
      [0,1,2], // Top row
      [3,4,5],  // Middle row
@@ -37,11 +38,11 @@ function checkWinner(){
 
    let index = WIN_COMBINATIONS.findIndex(
      case_set => case_set.every(
-       case_i => state[case_i] == "X") || case_set.every(
-         case_i =>state[case_i] == "O"));
+       case_i => squares[case_i].innerHTML == "X") || case_set.every(
+         case_i =>squares[case_i].innerHTML == "O"));
 
   if(index >= 0){
-    setMessage(`Player ${state[WIN_COMBINATIONS[index][0]]} Won!`);
+    setMessage(`Player ${squares[WIN_COMBINATIONS[index][0]].innerHTML} Won!`);
     return true;
   }
 
@@ -53,8 +54,8 @@ function doTurn(elem){
   updateState(elem)
   if (checkWinner()){
     // alert('');
-  } else {
-    $('div#message').text("Game tied!");
+  } else if () {
+    $('div#message').text("Tie game.");
   }
 }
 
