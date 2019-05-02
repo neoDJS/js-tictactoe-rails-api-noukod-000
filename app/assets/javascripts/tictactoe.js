@@ -12,14 +12,14 @@ function player(){
   return label;
 }
 
-function updateState(){
-    var x = parseInt($(this).data("x"));
-    var y = parseInt($(this).data("y"));
+function updateState(el){
+    var x = parseInt($(el).data("x"));
+    var y = parseInt($(el).data("y"));
     state[x+(3*y)] = player();
 }
 
 function setMessage(value){
-  $(document).text(value);
+  $('div#message').text(value);
 }
 
 function checkWinner(){
@@ -41,11 +41,30 @@ function checkWinner(){
          case_i =>state[case_i] == "O"));
 
   if(index >= 0){
-    setMessage(`Player ${state[WIN_COMBINATIONS[index][0]]} Won!`)
+    setMessage(`Player ${state[WIN_COMBINATIONS[index][0]]} Won!`);
     return true;
   }
 
   return false;
+}
+
+function doTurn(elem){
+  turn++;
+  updateState(elem)
+  if (checkWinner()){
+    // alert('');
+  } else {
+    $('div#message').text("Game tied!");
+  }
+}
+
+function attachListeners(){
+  $("#save").on('click', saveGame);
+  $("#clear").on('click', clearGame);
+  $("#previous").on('click', previousGames);
+  $("td").on('click', function(){
+    doTurn();
+  });
 }
 
 function saveGame(event){
@@ -88,19 +107,4 @@ function previousGames(event){
   // posting.done(function(data) {
   //   // TODO: handle response
   // });
-}
-
-function doTurn(){
-  turn++;
-  updateState()
-  checkWinner()
-}
-
-function attachListeners(){
-  $("#save").on('click', saveGame);
-  $("#clear").on('click', clearGame);
-  $("#previous").on('click', previousGames);
-  $("td").on('click', function(){
-    doTurn();
-  });
 }
