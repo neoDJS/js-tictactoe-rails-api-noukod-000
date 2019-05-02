@@ -53,11 +53,18 @@ function doTurn(elem){
   updateState(elem)
   if (checkWinner()){
     // alert('');
-    reload();
+    reset();
   } else if ($.makeArray($('td')).every(e => e.innerHTML != '')) {
     setMessage('Tie game.');
   }
   turn++;
+}
+
+function reset(){
+  $('td').each( e => {
+    e.text('');
+  });
+  turn = 0;
 }
 
 function attachListeners(){
