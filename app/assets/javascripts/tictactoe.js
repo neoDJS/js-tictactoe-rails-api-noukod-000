@@ -34,12 +34,12 @@ function checkWinner(){
      [0,4,8], // Top row
      [2,4,6]  // Middle row
      // ETC, an array for each win combination
-   ]
+   ];
 
    let index = WIN_COMBINATIONS.findIndex(
      case_set => case_set.every(
-       case_i => squares[case_i].innerHTML == "X") || case_set.every(
-         case_i =>squares[case_i].innerHTML == "O"));
+       case_i => squares[case_i].innerHTML === 'X') || case_set.every(
+         case_i => squares[case_i].innerHTML === 'O'));
 
   if(index >= 0){
     setMessage(`Player ${squares[WIN_COMBINATIONS[index][0]].innerHTML} Won!`);
@@ -50,13 +50,14 @@ function checkWinner(){
 }
 
 function doTurn(elem){
-  turn++;
   updateState(elem)
   if (checkWinner()){
     // alert('');
-  } else if () {
-    $('div#message').text("Tie game.");
+    reload();
+  } else if ($.makeArray($('td')).every(e => e.innerHTML != '')) {
+    setMessage('Tie game.');
   }
+  turn++;
 }
 
 function attachListeners(){
@@ -64,7 +65,7 @@ function attachListeners(){
   $("#clear").on('click', clearGame);
   $("#previous").on('click', previousGames);
   $("td").on('click', function(){
-    doTurn();
+    doTurn(this);
   });
 }
 
