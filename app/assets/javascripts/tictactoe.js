@@ -56,8 +56,14 @@ function doTurn(elem){
 
   if (checkWinner()){
     // alert('');
+<<<<<<< HEAD
     $("#save").trigger("click");
     reset();
+=======
+    $("#save").trigger( "click" );
+    reset();
+    return ;
+>>>>>>> b93527f62ec85a04e41deea4a83a8dc167dc3e22
   } else if ($.makeArray($('td')).every(e => $(e).text() != '')) {
     $("#save").trigger( "click" );
     setMessage('Tie game.');
@@ -67,7 +73,11 @@ function doTurn(elem){
 
 function reset(){
   turn = 0;
+<<<<<<< HEAD
   gameId = null;
+=======
+  gameId =  = undefined;
+>>>>>>> b93527f62ec85a04e41deea4a83a8dc167dc3e22
   $('td').empty();
   $('#games').empty();
   $('#message').empty();
@@ -88,16 +98,25 @@ function attachListeners(){
 function saveGame(event){
   //prevent form from submitting the default way
   event.preventDefault();
+<<<<<<< HEAD
   let tab = [];
   $('td').text(c => {
     tab.push(c);
   });
   var values = {state: $.makeArray($('td').text())}
+=======
+
+  var values = {state: $('td').}
+>>>>>>> b93527f62ec85a04e41deea4a83a8dc167dc3e22
   if (gameId){
     var posting = $.ajax({
         type: 'PATCH',
         url: `/games/${gameId}`,
+<<<<<<< HEAD
         data: values
+=======
+        data: gameData
+>>>>>>> b93527f62ec85a04e41deea4a83a8dc167dc3e22
       });
   } else {
     var posting = $.post('/games', values);
@@ -106,6 +125,11 @@ function saveGame(event){
   posting.done(function(game) {
     // TODO: handle response
     gameId = game.data.id;
+<<<<<<< HEAD
+=======
+    // $('#games').append(`<button id="game-${gameId}">${gameId}</button><br>`);
+    // $("#gameid-" + gameId).on('click', openGame(gameId));
+>>>>>>> b93527f62ec85a04e41deea4a83a8dc167dc3e22
   });
 }
 
@@ -114,10 +138,17 @@ function clearGame(event){
 }
 
 function previousGames(event){
+<<<<<<< HEAD
   $('#games').empty();
 
     $.getJSON('/games', res => {
         res["data"].length && res["data"].forEach(game => {
+=======
+  $('#games').empty()
+
+    $.getJSON('/games', res => {
+        res["data"].length && res[data].forEach(game => {
+>>>>>>> b93527f62ec85a04e41deea4a83a8dc167dc3e22
             $('#games').append(`<button id="game-${game.id}" data-id="${game.id}">${game.id}</button>`);
             $(`#game-${game.id}`).on('click', openGame);
         });
@@ -127,6 +158,7 @@ function previousGames(event){
 }
 
 function openGame(event){
+<<<<<<< HEAD
   reset();
   const id = $(this).data("id");
   $.getJSON(`/games/${id}`, res => {
@@ -140,6 +172,16 @@ function openGame(event){
     if (ci) {
       doTurn($('td')[ci]);
     }
+=======
+  const id = $(this).data("id");
+  $.getJSON(`/games/${id}`, res => {
+    res['data']["attributes"]["state"].forEach((val, i)=>{
+          $('td')[i].text(val);
+    });
+    turn = res['data']["attributes"]["state"].join('').length;
+    gameId = res['data']["id"];
+    doTurn($('td')[0]);
+>>>>>>> b93527f62ec85a04e41deea4a83a8dc167dc3e22
   }).fail(function(error) {
         console.log('Chargement du jeu non reussi: ' + error.statusText);
   });
