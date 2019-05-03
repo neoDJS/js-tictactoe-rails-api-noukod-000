@@ -1,7 +1,6 @@
 // Code your JavaScript / jQuery solution here
 turn = 0;
 let gameId;
-let state = ['', '', '', '', '', '', '', '', ''];
 
 $(document).ready(function(){
   attachListeners();
@@ -38,11 +37,11 @@ function checkWinner(){
 
    let index = WIN_COMBINATIONS.findIndex(
      case_set => case_set.every(
-       case_i => squares[case_i].innerHTML === 'X') || case_set.every(
-         case_i => squares[case_i].innerHTML === 'O'));
+       case_i => $(squares[case_i]).text() === 'X') || case_set.every(
+         case_i => $(squares[case_i]).text() === 'O'));
 
   if(index >= 0){
-    setMessage(`Player ${squares[WIN_COMBINATIONS[index][0]].innerHTML} Won!`);
+    setMessage(`Player ${$(squares[WIN_COMBINATIONS[index][0]]).text()} Won!`);
     return true;
   }
 
@@ -50,21 +49,29 @@ function checkWinner(){
 }
 
 function doTurn(elem){
-  updateState(elem)
+  if($(elem).text() == ''){
+    updateState(elem);
+    turn++;
+  }
+
   if (checkWinner()){
     // alert('');
+    $("#save").trigger("click");
     reset();
-  } else if ($.makeArray($('td')).every(e => e.innerHTML != '')) {
+  } else if ($.makeArray($('td')).every(e => $(e).text() != '')) {
+    $("#save").trigger( "click" );
     setMessage('Tie game.');
+    reset();
   }
-  turn++;
 }
 
 function reset(){
-  $('td').each( e => {
-    e.text('');
-  });
   turn = 0;
+  gameId = null;
+  $('td').empty();
+  $('#games').empty();
+  $('#message').empty();
+  // console.log(turn);
 }
 
 function attachListeners(){
@@ -72,48 +79,68 @@ function attachListeners(){
   $("#clear").on('click', clearGame);
   $("#previous").on('click', previousGames);
   $("td").on('click', function(){
-    doTurn(this);
+    if((!checkWinner()) && (turn <= 9)){
+      doTurn(this);
+    }
   });
 }
 
 function saveGame(event){
   //prevent form from submitting the default way
   event.preventDefault();
-
-  var values = $(state).serialize();
+  let tab = [];
+  $('td').text(c => {
+    tab.push(c);
+  });
+  var values = {state: $.makeArray($('td').text())}
   if (gameId){
-    var posting = $.patch(`/games/${gameId}`, values);
+    var posting = $.ajax({
+        type: 'PATCH',
+        url: `/games/${gameId}`,
+        data: values
+      });
   } else {
     var posting = $.post('/games', values);
   }
 
-  posting.done(function(data) {
+  posting.done(function(game) {
     // TODO: handle response
+    gameId = game.data.id;
   });
 }
 
 function clearGame(event){
-  //prevent form from submitting the default way
-  event.preventDefault();
-
-  // var values = $(this).serialize();
-  //
-  // var posting = $.post('/posts', values);
-  //
-  // posting.done(function(data) {
-  //   // TODO: handle response
-  // });
+  reset();
 }
 
 function previousGames(event){
-  //prevent form from submitting the default way
-  event.preventDefault();
+  $('#games').empty();
 
-  // var values = $(this).serialize();
-  //
-  // var posting = $.post('/posts', values);
-  //
-  // posting.done(function(data) {
-  //   // TODO: handle response
-  // });
+    $.getJSON('/games', res => {
+        res["data"].length && res["data"].forEach(game => {
+            $('#games').append(`<button id="game-${game.id}" data-id="${game.id}">${game.id}</button>`);
+            $(`#game-${game.id}`).on('click', openGame);
+        });
+    }).fail(function(error) {
+        console.log('Something went wrong: ' + error.statusText);
+  });
+}
+
+function openGame(event){
+  reset();
+  const id = $(this).data("id");
+  $.getJSON(`/games/${id}`, res => {
+    let ci;
+    res["data"]["attributes"]["state"].forEach((val, i)=>{
+          $($('td')[i]).text(val);
+          if (val != ''){ci = i;}
+    });
+    turn = res["data"]["attributes"]["state"].join('').length;
+    gameId = res["data"]["id"];
+    if (ci) {
+      doTurn($('td')[ci]);
+    }
+  }).fail(function(error) {
+        console.log('Chargement du jeu non reussi: ' + error.statusText);
+  });
 }
