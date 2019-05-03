@@ -67,7 +67,7 @@ function doTurn(elem){
 
 function reset(){
   turn = 0;
-  gameId = null;
+  gameId = undefined;
   $('td').empty();
   $('#games').empty();
   $('#message').empty();
@@ -93,6 +93,7 @@ function saveGame(event){
     tab.push(c);
   });
   var values = {state: $.makeArray($('td').text())}
+
   if (gameId){
     var posting = $.ajax({
         type: 'PATCH',
